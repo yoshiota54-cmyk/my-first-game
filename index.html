@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+    <script src="main.js"></script>
+</head>
+<body style="margin:10px;">
+
+    <div>
+        <section style="padding: 8px">
+            <p>※サンプルページ。</p>
+        </section>
+
+        <section style="padding: 8px">
+            <a href="game1/index.html" class="button">Game 1</a>
+        </section>
+        <section style="padding: 8px">
+            <a href="game2/index.html" class="button">Game 2</a>
+        </section>
+        <section style="padding: 8px">
+            <a href="game3/index.html" class="button">Game 3</a>
+        </section>
+        <section style="padding: 8px">
+            <a href="game4/index.html" class="button">Game 4</a>
+        </section>
+    </div>
+
+</body>
+</html>
