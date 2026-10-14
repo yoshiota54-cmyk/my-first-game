@@ -1,7 +1,4 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-	<meta charset="utf-8">
+meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
 	<script src="enchant.min.js"></script>
@@ -11,51 +8,50 @@
 	body {
 		margin: 0px;
 		padding: 0px;
+		background-color: #000; /* 読み込み中に一瞬白くなるのを防ぐため黒に */
 	}
 	</style>
 	<script>
-		// TOUCH to START が押されたときに実行される関数
-		function startNow() {
-			// iOS (iPhone) や最新のAndroidブラウザ向けの傾きセンサーの許可申請
+		// 画面のどこかをタッチしたときに実行される関数
+		function requestSensorPermission() {
+			// iOS (iPhone) や最新のAndroid向けの傾きセンサーの許可申請
 			if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
 				DeviceOrientationEvent.requestPermission()
 					.then(permissionState => {
 						if (permissionState === 'granted') {
 							console.log("傾きセンサーの利用が許可されました");
-						} else {
-							alert("センサーの利用が拒否されました。ゲームが正常に動かない可能性があります。");
+							// 許可されたら、main.js側で新しく作ったセンサー監視を開始する
+							if (typeof setDefaultAccel === 'function') { setDefaultAccel(); }
 						}
-						// 許可の成否に関わらず、既存のゲーム開始処理（main.js側など）に進む
-						proceedToGame();
+						// スタート画面（案内文字）を消す
+						hideStartMessage();
 					})
 					.catch(error => {
-						console.error("センサー許可リクエストエラー:", error);
-						proceedToGame();
+						console.error("センサー許可エラー:", error);
+						hideStartMessage();
 					});
 			} else {
-				// 許可申請が不要な古いブラウザや通常のAndroid環境の場合
-				proceedToGame();
+				// 許可申請が不要な古いブラウザやAndroid環境の場合
+				if (typeof setDefaultAccel === 'function') { setDefaultAccel(); }
+				hideStartMessage();
 			}
 		}
-		// 本来のゲーム開始処理を呼び出す関数（修正版）
-		function proceedToGame() {
+
+		// スタート案内画面を消す関数
+		function hideStartMessage() {
 			var msgDiv = document.getElementById('msg');
 			if (msgDiv) {
 				msgDiv.style.display = 'none';
 			}
-			
-			// main.js側に新しく作ったセンサー開始命令をここで呼び出す！
-			if (typeof setDefaultAccel === 'function') {
-				setDefaultAccel();
-			}
 		}
-
-		
 	</script>
 </head>
 <body>
-	<!-- onclickを上記の新しいstartNow()を呼ぶようにしています -->
-	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:#bbb;font-size:24pt; z-index:998; text-align:center; padding-top:20%;" onclick="startNow();">TOUCH to START</div>
-    <a href="../index.html" style="color: #fff; position: absolute; top: 10px; right: 10px; z-index: 999;">メニューに戻る</a>
+	<!-- ゲーム画面の上に、透明な「タッチを感知するための膜」を1枚被せる作りに変更します -->
+	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:rgba(187,187,187,0.85); font-size:24pt; z-index:998; text-align:center; padding-top:20%; color:#000; cursor:pointer;" onclick="requestSensorPermission();">
+		TOUCH to START<br>
+		<span style="font-size:14pt; color:#333;">(傾きセンサーの許可)</span>
+	</div>
+    <a href="../index.html" style="color: #fff; position: absolute; top: 10px; right: 10px; z-index: 999; font-weight: bold; background-color: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; text-decoration: none;">メニューに戻る</a>
 </body>
 </html>
