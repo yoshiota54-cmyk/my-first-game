@@ -18,18 +18,14 @@
 	</style>
 
 	<script>
-		// 【重要】ページが読み込まれたら、自動でenchant.jsの準備（ゲーム起動）を開始させる
-		window.onload = function() {
-			console.log("ゲームエンジン(enchant.js)の起動準備が完了しました");
-		};
-
-		// 画面のどこかをタッチしたときに実行される関数
+		// 画面のどこかをタッチしたときに実行される関数（傾きセンサーの許可申請）
 		function requestSensorPermission() {
 			if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
 				DeviceOrientationEvent.requestPermission()
 					.then(permissionState => {
 						if (permissionState === 'granted') {
 							console.log("傾きセンサーの利用が許可されました");
+							// main.js側に新しく作ったセンサー監視を開始する
 							if (typeof setDefaultAccel === 'function') { setDefaultAccel(); }
 						}
 						hideStartMessage();
@@ -39,6 +35,7 @@
 						hideStartMessage();
 					});
 			} else {
+				// 許可申請が不要なブラウザ環境の場合
 				if (typeof setDefaultAccel === 'function') { setDefaultAccel(); }
 				hideStartMessage();
 			}
@@ -54,8 +51,8 @@
 	</script>
 </head>
 <body>
-	<!-- 最初の案内画面（TOUCH to START） -->
-	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:rgba(187,187,187,0.85); font-size:24pt; z-index:998; text-align:center; padding-top:20%; color:#000; cursor:pointer;" onclick="requestSensorPermission();">
+	<!-- 最初の案内画面（TOUCH to START）※半透明を一時的にやめ、完全に覆う形に戻します -->
+	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:#bbb; font-size:24pt; z-index:998; text-align:center; padding-top:20%; color:#000; cursor:pointer;" onclick="requestSensorPermission();">
 		TOUCH to START<br>
 		<span style="font-size:14pt; color:#333;">(傾きセンサーの許可)</span>
 	</div>
