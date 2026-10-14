@@ -37,19 +37,20 @@
 				proceedToGame();
 			}
 		}
-
-		// 本来のゲーム開始処理を呼び出す関数
+		// 本来のゲーム開始処理を呼び出す関数（修正版）
 		function proceedToGame() {
-			// もし元のプログラムが「スタート画面を消す」ような仕組みであれば、
-			// ここで文字を非表示にします（不要な場合はこのままでOKです）
 			var msgDiv = document.getElementById('msg');
 			if (msgDiv) {
 				msgDiv.style.display = 'none';
 			}
 			
-			// 注意: もしこれでも動かない場合、main.js側で自動スタート（window.onloadなど）
-			// してしまっている可能性があるため、その際はmain.js側の調整が必要です。
+			// main.js側に新しく作ったセンサー開始命令をここで呼び出す！
+			if (typeof setDefaultAccel === 'function') {
+				setDefaultAccel();
+			}
 		}
+
+		
 	</script>
 </head>
 <body>
