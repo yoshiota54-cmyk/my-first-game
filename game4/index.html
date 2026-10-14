@@ -18,41 +18,44 @@
 	</style>
 
 	<script>
-		// 画面のどこかをタッチしたときに実行される関数（傾きセンサーの許可申請）
-		function requestSensorPermission() {
+		// 画面の「TOUCH to START」が押されたときに実行される関数
+		function clickStart() {
+			// ① iOS(iPhone)や最新Androidブラウザ向けの傾きセンサーの許可申請
 			if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
 				DeviceOrientationEvent.requestPermission()
 					.then(permissionState => {
 						if (permissionState === 'granted') {
 							console.log("傾きセンサーの利用が許可されました");
-							// main.js側に新しく作ったセンサー監視を開始する
-							if (typeof setDefaultAccel === 'function') { setDefaultAccel(); }
 						}
-						hideStartMessage();
+						// センサー許可を求めた後、本物のゲーム起動処理（main.jsのstartNow）を呼び出す！
+						runRealGame();
 					})
 					.catch(error => {
 						console.error("センサー許可エラー:", error);
-						hideStartMessage();
+						runRealGame();
 					});
 			} else {
-				// 許可申請が不要なブラウザ環境の場合
-				if (typeof setDefaultAccel === 'function') { setDefaultAccel(); }
-				hideStartMessage();
+				// 許可申請が不要な通常のブラウザ環境の場合
+				runRealGame();
 			}
 		}
 
-		// スタート案内画面を消す関数
-		function hideStartMessage() {
-			var msgDiv = document.getElementById('msg');
-			if (msgDiv) {
-				msgDiv.style.display = 'none';
+		// main.jsのゲーム起動処理と傾きセンサーの監視を連動させて開始する関数
+		function runRealGame() {
+			// main.js側にもともと用意されている、本物のゲーム開始関数を呼び出す
+			if (typeof startNow === 'function') {
+				startNow();
+			}
+			// main.jsの最下部に新しく作ったセンサー監視命令をここで呼び出す
+			if (typeof setDefaultAccel === 'function') {
+				setDefaultAccel();
 			}
 		}
 	</script>
 </head>
 <body>
-	<!-- 最初の案内画面（TOUCH to START）※半透明を一時的にやめ、完全に覆う形に戻します -->
-	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:#bbb; font-size:24pt; z-index:998; text-align:center; padding-top:20%; color:#000; cursor:pointer;" onclick="requestSensorPermission();">
+	<!-- 最初の案内画面（クリックされたら上の clickStart() を呼び出します） -->
+	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:#bbb; font-size:24pt; z-index:998; text-align:center; padding-top:20%; color:#000; cursor:pointer;" onclick="clickStart();">
 		TOUCH to START<br>
 		<span style="font-size:14pt; color:#333;">(傾きセンサーの許可)</span>
 	</div>
