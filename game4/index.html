@@ -4,12 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
-    <!--<script src="cordova.js"></script>  -->
-	<!--<script src="../components/loader.js"></script> -->
 	<script src="enchant.min.js"></script>
-    
-	<!--<link rel="stylesheet" href="../components/loader.css">   -->
-	
 	<script src="data.js"></script>
 	<script src="main.js"></script>
 	<style type="text/css">
@@ -18,11 +13,48 @@
 		padding: 0px;
 	}
 	</style>
+	<script>
+		// TOUCH to START が押されたときに実行される関数
+		function startNow() {
+			// iOS (iPhone) や最新のAndroidブラウザ向けの傾きセンサーの許可申請
+			if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+				DeviceOrientationEvent.requestPermission()
+					.then(permissionState => {
+						if (permissionState === 'granted') {
+							console.log("傾きセンサーの利用が許可されました");
+						} else {
+							alert("センサーの利用が拒否されました。ゲームが正常に動かない可能性があります。");
+						}
+						// 許可の成否に関わらず、既存のゲーム開始処理（main.js側など）に進む
+						proceedToGame();
+					})
+					.catch(error => {
+						console.error("センサー許可リクエストエラー:", error);
+						proceedToGame();
+					});
+			} else {
+				// 許可申請が不要な古いブラウザや通常のAndroid環境の場合
+				proceedToGame();
+			}
+		}
+
+		// 本来のゲーム開始処理を呼び出す関数
+		function proceedToGame() {
+			// もし元のプログラムが「スタート画面を消す」ような仕組みであれば、
+			// ここで文字を非表示にします（不要な場合はこのままでOKです）
+			var msgDiv = document.getElementById('msg');
+			if (msgDiv) {
+				msgDiv.style.display = 'none';
+			}
+			
+			// 注意: もしこれでも動かない場合、main.js側で自動スタート（window.onloadなど）
+			// してしまっている可能性があるため、その際はmain.js側の調整が必要です。
+		}
+	</script>
 </head>
 <body>
-	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:#bbb;font-size:24pt;" onclick="startNow();">TOUCH to START</div>
+	<!-- onclickを上記の新しいstartNow()を呼ぶようにしています -->
+	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:#bbb;font-size:24pt; z-index:998; text-align:center; padding-top:20%;" onclick="startNow();">TOUCH to START</div>
     <a href="../index.html" style="color: #fff; position: absolute; top: 10px; right: 10px; z-index: 999;">メニューに戻る</a>
-
 </body>
 </html>
-
