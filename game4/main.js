@@ -94,7 +94,6 @@ function startNow(){
 	// ゲームの開始
 	game.start();
 	
-	setDefaultAccel();
 	
 };
 
