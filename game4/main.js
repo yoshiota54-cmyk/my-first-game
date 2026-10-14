@@ -140,56 +140,53 @@ function createBoard(){
 	}
 }
 
-// センサーで基準値計測
-function setDefaultAccel(){
-	navigator.accelerometer.
-		getCurrentAcceleration(onDefaultAccelSuccess, onError);
+// 【修正版】センサーの監視を開始する（index.htmlのTOUCH to STARTから呼び出されます）
+function setDefaultAccel() {
+    // ブラウザ標準の傾き（DeviceOrientation）イベントを登録
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', onOrientationChange, false);
+    } else {
+        alert("お使いのブラウザは傾きセンサーに対応していません。");
+    }
 }
 
-// センサー処理1
-function onDefaultAccelSuccess(accel){
-	default_accel.x = Math.floor(accel.x + 100) / 100;
-	default_accel.y = Math.floor(accel.y + 100) / 100;
-	doMotion();
+// 【修正版】センサー処理（スマホの傾きを検知してプレイヤーの移動量に変換）
+function onOrientationChange(event) {
+    // event.gamma: 左右の傾き（左がマイナス、右がプラス）
+    // event.beta: 前後の傾き（手前がプラス、奥がマイナス）
+    var gamma = event.gamma;
+    var beta = event.beta;
+
+    // センサー値が取得できない場合は処理しない
+    if (gamma === null || beta === null) return;
+
+    var frm = walk.stop;
+    player_move.x = 0;
+    player_move.y = 0;
+
+    // 左右の傾き判定（傾きの強さに応じて値を調整してください。ここでは±5度を基準にしています）
+    if (gamma > 5) {
+        frm = walk.right;
+        player_move.x += 5;
+    } else if (gamma < -5) {
+        frm = walk.left;
+        player_move.x -= 5;
+    }
+
+    // 前後の傾き判定（手前・奥の傾き±5度を基準にしています）
+    if (beta > 5) {
+        // スマホを手前に傾けたら下へ（ゲームの仕様に合わせて調整してください）
+        frm = walk.down;
+        player_move.y += 5;
+    } else if (beta < -5) {
+        // スマホを奥に傾けたら上へ
+        frm = walk.up;
+        player_move.y -= 5;
+    }
+
+    player.frame = frm;
 }
 
-// センサー処理定期的にセンサーを計測
-function doMotion(){
-	watch_id = navigator.accelerometer.
-		watchAcceleration(onAccelSuccess, onError, { frequency:200 });
-}
-
-// センサー処理2
-function onAccelSuccess(accel) {
-	accelerate.x = Math.floor(accel.x + 100) / 100;
-	accelerate.y = Math.floor(accel.y + 100) / 100;
-	
-	var frm = walk.stop;
-	player_move.x = 0;
-	player_move.y = 0;
-	if (default_accel.x > accelerate.x){
-		frm = walk.right;
-		player_move.x += 5;
-	}
-	if (default_accel.x < accelerate.x){
-		frm = walk.left;
-		player_move.x -= 5;
-	}
-	if (default_accel.y > accelerate.y){
-		frm = walk.up;
-		player_move.y -= 5;
-	}
-	if (default_accel.y < accelerate.y){
-		frm = walk.down;
-		player_move.y += 5;
-	}
-	player.frame = frm;
-}
-
-// エラー用ハンドラ関数
-function onError(err){
-	console.log('ERR: ' + err.toLocaleString());
-}
 
 // スプライト（プレーヤー）を動かす
 function move_sprite(){
