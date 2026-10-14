@@ -125,7 +125,7 @@ function createBoard(){
 				} catch(e){}
 				sp_data = ladder_set[c];
 				break;
-			case 2:c
+			case 2:
 				sp_data = {'img':'img/trampoline_100x50.png','w':100, 'h':50};
 				break;
 			}
