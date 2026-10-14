@@ -1,12 +1,10 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<!-- ブラウザが最初に読み込むべき設定（メタタグ）を一番上に並び替えます -->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
 
-	<!-- 次にゲームのプログラム（外部ファイル）を読み込みます -->
 	<script src="enchant.min.js"></script>
 	<script src="data.js"></script>
 	<script src="main.js"></script>
@@ -20,6 +18,11 @@
 	</style>
 
 	<script>
+		// 【重要】ページが読み込まれたら、自動でenchant.jsの準備（ゲーム起動）を開始させる
+		window.onload = function() {
+			console.log("ゲームエンジン(enchant.js)の起動準備が完了しました");
+		};
+
 		// 画面のどこかをタッチしたときに実行される関数
 		function requestSensorPermission() {
 			if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -51,7 +54,7 @@
 	</script>
 </head>
 <body>
-	<!-- 透明なタッチ用の膜 -->
+	<!-- 最初の案内画面（TOUCH to START） -->
 	<div id="msg" style="position:absolute; width:100%; height:100%; background-color:rgba(187,187,187,0.85); font-size:24pt; z-index:998; text-align:center; padding-top:20%; color:#000; cursor:pointer;" onclick="requestSensorPermission();">
 		TOUCH to START<br>
 		<span style="font-size:14pt; color:#333;">(傾きセンサーの許可)</span>
